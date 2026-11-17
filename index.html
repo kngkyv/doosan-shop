@@ -1,0 +1,857 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>
+:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;font:14px system-ui,-apple-system,"Segoe UI",sans-serif}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<title>Dosan Roasters</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+/* Layout: storefront in a warm stone register; the workshop drawer switches to a cool
+   monospace console register, so the shop and the instrumentation never read as one surface. */
+:root {
+  --stone-0:#faf8f6; --stone-1:#f2eeea; --stone-2:#e6e0da; --stone-3:#d3cac1;
+  --ink:#1c1917; --ink-soft:#4d4642; --ink-faint:#7d736c;
+  --garnet:#8c2f39; --garnet-soft:#a8505a; --garnet-wash:#f6e9ea;
+  --amber:#b4740f;
+  --ok:#2f6b46; --ok-wash:#e6f1ea;
+  --bad:#9c2b23; --bad-wash:#fbeae8;
+  --console-bg:#1a1d21; --console-panel:#22262b; --console-line:#343a41;
+  --console-fg:#d6dce3; --console-dim:#8e99a5; --console-accent:#e0a040;
+
+  --font-display:"Fraunces",Georgia,"Times New Roman",serif;
+  --font-body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+
+  --radius:4px;
+  --shadow:0 1px 2px rgba(28,25,23,.06),0 8px 24px -12px rgba(28,25,23,.18);
+  --gutter:max(16px,env(safe-area-inset-left,0px));
+  --gutter-r:max(16px,env(safe-area-inset-right,0px));
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --stone-0:#17140f; --stone-1:#201c17; --stone-2:#2c2721; --stone-3:#423a32;
+    --ink:#f2ece5; --ink-soft:#c4b9ae; --ink-faint:#938779;
+    --garnet:#d98a93; --garnet-soft:#b9666f; --garnet-wash:#2e1d1f;
+    --amber:#e0a040;
+    --ok:#7bc295; --ok-wash:#1b2a21;
+    --bad:#e59086; --bad-wash:#2d1a18;
+    --console-bg:#101316; --console-panel:#191d21; --console-line:#2b3137;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px -12px rgba(0,0,0,.6);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --stone-0:#17140f; --stone-1:#201c17; --stone-2:#2c2721; --stone-3:#423a32;
+  --ink:#f2ece5; --ink-soft:#c4b9ae; --ink-faint:#938779;
+  --garnet:#d98a93; --garnet-soft:#b9666f; --garnet-wash:#2e1d1f;
+  --amber:#e0a040;
+  --ok:#7bc295; --ok-wash:#1b2a21;
+  --bad:#e59086; --bad-wash:#2d1a18;
+  --console-bg:#101316; --console-panel:#191d21; --console-line:#2b3137;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px -12px rgba(0,0,0,.6);
+  color-scheme: dark;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--stone-0); color:var(--ink);
+  font-family:var(--font-body); font-size:15px; line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--stone-1)}
+h1,h2,h3{margin:0;font-family:var(--font-display);font-weight:600;text-wrap:balance;letter-spacing:-.01em}
+button{font:inherit;cursor:pointer}
+input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--garnet);outline-offset:2px}
+.num{font-variant-numeric:tabular-nums}
+.wrap{max-width:1180px;margin:0 auto;padding-left:var(--gutter);padding-right:var(--gutter-r)}
+
+/* ---------- top bar ---------- */
+.bar{
+  position:sticky;top:env(safe-area-inset-top,0px);z-index:20;
+  background:var(--stone-1);border-bottom:1px solid var(--stone-2);
+}
+.bar-in{display:flex;align-items:center;gap:14px;padding-block:11px;min-height:58px}
+.brand{display:flex;flex-direction:column;line-height:1.1;margin-right:auto;min-width:0}
+.brand b{font-family:var(--font-display);font-size:19px;font-weight:700;letter-spacing:-.015em}
+.brand span{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);margin-top:3px}
+.chip{
+  display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:100px;
+  font-family:var(--font-mono);font-size:11.5px;font-weight:500;letter-spacing:.01em;
+  border:1px solid var(--stone-3);background:var(--stone-0);color:var(--ink-soft);white-space:nowrap;
+}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--ink-faint);flex:none}
+.chip[data-s="live"]{border-color:var(--ok);color:var(--ok);background:var(--ok-wash)}
+.chip[data-s="live"] .dot{background:var(--ok)}
+.chip[data-s="preview"]{border-color:var(--amber);color:var(--amber)}
+.chip[data-s="preview"] .dot{background:var(--amber)}
+.btn-workshop{
+  display:inline-flex;align-items:center;gap:7px;padding:7px 13px;border-radius:var(--radius);
+  border:1px solid var(--ink);background:var(--ink);color:var(--stone-0);
+  font-family:var(--font-mono);font-size:12px;font-weight:500;
+}
+.btn-workshop:hover{opacity:.88}
+
+/* ---------- console drawer ---------- */
+.console{background:var(--console-bg);color:var(--console-fg);border-bottom:1px solid var(--console-line)}
+.console-in{padding-block:22px 26px;display:grid;gap:20px;grid-template-columns:minmax(0,340px) minmax(0,1fr)}
+.console h2{
+  font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--console-accent);margin-bottom:11px;
+}
+.console label{display:block;font-family:var(--font-mono);font-size:11px;color:var(--console-dim);margin-bottom:5px;letter-spacing:.03em}
+.console input[type=url],.console input[type=text]{
+  width:100%;padding:9px 11px;border-radius:var(--radius);border:1px solid var(--console-line);
+  background:var(--console-panel);color:var(--console-fg);font-family:var(--font-mono);font-size:12.5px;
+}
+.console input::placeholder{color:#5d6670}
+.radios{display:flex;flex-direction:column;gap:7px;margin-top:4px}
+.radios label{display:flex;gap:9px;align-items:flex-start;font-family:var(--font-body);font-size:13px;color:var(--console-fg);margin:0;cursor:pointer}
+.radios input{margin:3px 0 0;accent-color:var(--console-accent);flex:none}
+.radios small{display:block;color:var(--console-dim);font-size:11.5px;line-height:1.4}
+.rec{font-family:var(--font-mono);font-size:9.5px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--console-bg);background:var(--console-accent);padding:1px 5px;border-radius:2px;margin-left:5px;vertical-align:1px}
+.hint{font-family:var(--font-mono);font-size:11px;color:var(--console-dim);line-height:1.5;margin:6px 0 0}
+.hint b{color:var(--console-accent);font-weight:500}
+.cpanel{background:var(--console-panel);border:1px solid var(--console-line);border-radius:var(--radius);overflow:hidden}
+.cpanel-hd{
+  display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid var(--console-line);
+  font-family:var(--font-mono);font-size:11px;color:var(--console-dim);letter-spacing:.04em;
+}
+.cpanel-hd b{color:var(--console-fg);font-weight:500}
+.cbtn{
+  margin-left:auto;padding:3px 9px;border-radius:3px;border:1px solid var(--console-line);
+  background:transparent;color:var(--console-dim);font-family:var(--font-mono);font-size:10.5px;
+}
+.cbtn:hover{color:var(--console-fg);border-color:var(--console-dim)}
+pre.json{
+  margin:0;padding:12px;max-height:270px;overflow:auto;
+  font-family:var(--font-mono);font-size:11.5px;line-height:1.6;color:var(--console-fg);
+  white-space:pre;tab-size:2;
+}
+pre.json .k{color:#8fb8e0}pre.json .s{color:#b5d9a0}pre.json .n{color:var(--console-accent)}pre.json .b{color:#d79ed7}
+.log{max-height:150px;overflow:auto;font-family:var(--font-mono);font-size:11.5px}
+.log-row{display:flex;gap:10px;padding:7px 12px;border-bottom:1px solid var(--console-line);align-items:baseline}
+.log-row:last-child{border-bottom:0}
+.log-row time{color:var(--console-dim);flex:none}
+.log-row .st{flex:none;font-weight:600}
+.log-row .st.ok{color:#7bc295}.log-row .st.bad{color:#e59086}.log-row .st.dim{color:var(--console-accent)}
+.log-row p{margin:0;color:var(--console-dim);min-width:0;overflow-wrap:anywhere}
+.log-empty{padding:14px 12px;color:var(--console-dim);font-family:var(--font-mono);font-size:11.5px}
+.console details{margin-top:14px;border-top:1px solid var(--console-line);padding-top:12px}
+.console summary{font-family:var(--font-mono);font-size:11px;color:var(--console-accent);cursor:pointer;letter-spacing:.06em;text-transform:uppercase}
+.console details ol{margin:11px 0 0;padding-left:20px;display:grid;gap:7px;font-size:13px;color:var(--console-fg)}
+.console details ol b{color:var(--console-accent);font-weight:600}
+.console details ol span{color:var(--console-dim)}
+
+/* ---------- shop ---------- */
+.hero{border-bottom:1px solid var(--stone-2);background:var(--stone-1)}
+.hero-in{padding-block:30px 32px;display:grid;gap:14px;max-width:660px}
+.eyebrow{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.17em;text-transform:uppercase;color:var(--garnet)}
+.hero h1{font-size:clamp(28px,5.2vw,42px);line-height:1.08}
+.hero h1 i{font-style:italic;font-weight:400;color:var(--ink-soft)}
+.hero p{margin:0;color:var(--ink-soft);font-size:15.5px;max-width:56ch}
+.roastline{
+  display:flex;flex-wrap:wrap;gap:6px 18px;font-family:var(--font-mono);font-size:11.5px;
+  color:var(--ink-faint);padding-top:4px;
+}
+.shop{display:grid;gap:26px;grid-template-columns:minmax(0,1fr) minmax(0,352px);padding-block:30px 60px;align-items:start}
+.sect-hd{display:flex;align-items:baseline;gap:12px;margin-bottom:16px}
+.sect-hd h2{font-size:21px}
+.sect-hd em{font-family:var(--font-mono);font-style:normal;font-size:11px;color:var(--ink-faint);letter-spacing:.06em}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(248px,1fr))}
+.card{
+  background:var(--stone-1);border:1px solid var(--stone-2);border-radius:var(--radius);
+  padding:16px;display:flex;flex-direction:column;gap:11px;min-width:0;
+}
+.card-top{display:flex;gap:10px;align-items:flex-start}
+.card h3{font-size:16.5px;line-height:1.2;flex:1;min-width:0}
+.price{font-family:var(--font-mono);font-size:13px;font-weight:500;flex:none;color:var(--ink)}
+.spec{font-family:var(--font-mono);font-size:11px;color:var(--ink-faint);line-height:1.6;overflow-wrap:anywhere}
+.notes{font-size:13.5px;color:var(--ink-soft);font-style:italic;margin:0}
+.flags{display:flex;flex-wrap:wrap;gap:6px}
+.flag{
+  font-family:var(--font-mono);font-size:10px;letter-spacing:.07em;text-transform:uppercase;
+  padding:3px 7px;border-radius:2px;background:var(--stone-2);color:var(--ink-soft);
+}
+.flag.low{background:var(--garnet-wash);color:var(--garnet)}
+.card-ctl{display:flex;gap:7px;margin-top:auto;flex-wrap:wrap}
+.card-ctl select{
+  flex:1 1 92px;min-width:0;padding:7px 8px;border-radius:var(--radius);
+  border:1px solid var(--stone-3);background:var(--stone-0);font-size:12.5px;
+}
+.add{
+  flex:none;padding:7px 14px;border-radius:var(--radius);border:1px solid var(--garnet);
+  background:var(--garnet);color:#fff;font-size:12.5px;font-weight:600;
+}
+:root[data-theme="dark"] .add,:root:not([data-theme="light"]) .add{color:#20100f}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]) .add{color:#fff}}
+.add:hover{background:var(--garnet-soft);border-color:var(--garnet-soft)}
+.add:disabled{opacity:.45;cursor:not-allowed}
+
+/* ---------- cart rail ---------- */
+.rail{
+  background:var(--stone-1);border:1px solid var(--stone-2);border-radius:var(--radius);
+  box-shadow:var(--shadow);position:sticky;top:calc(env(safe-area-inset-top,0px) + 74px);
+}
+.rail-hd{padding:14px 16px;border-bottom:1px solid var(--stone-2);display:flex;align-items:baseline;gap:9px}
+.rail-hd h2{font-size:16px}
+.rail-hd em{font-family:var(--font-mono);font-style:normal;font-size:11px;color:var(--ink-faint);margin-left:auto}
+.lines{padding:6px 16px;display:grid;gap:0}
+.line{display:grid;grid-template-columns:1fr auto;gap:4px 10px;padding:11px 0;border-bottom:1px solid var(--stone-2)}
+.line:last-child{border-bottom:0}
+.line b{font-size:13.5px;font-weight:600;line-height:1.3}
+.line .meta{font-family:var(--font-mono);font-size:10.5px;color:var(--ink-faint);grid-column:1}
+.line .amt{font-family:var(--font-mono);font-size:12.5px;align-self:start}
+.qty{display:flex;align-items:center;gap:2px;grid-column:2;justify-self:end}
+.qty button{
+  width:22px;height:22px;display:grid;place-items:center;border-radius:2px;
+  border:1px solid var(--stone-3);background:var(--stone-0);color:var(--ink-soft);font-size:13px;line-height:1;
+}
+.qty button:hover{border-color:var(--ink-faint);color:var(--ink)}
+.qty span{font-family:var(--font-mono);font-size:12px;min-width:20px;text-align:center}
+.empty{padding:24px 16px;color:var(--ink-faint);font-size:13.5px;text-align:center}
+.form{padding:14px 16px;border-top:1px solid var(--stone-2);display:grid;gap:10px}
+.form h3{font-family:var(--font-mono);font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint)}
+.fld{display:grid;gap:4px}
+.fld label{font-size:11.5px;color:var(--ink-soft);font-weight:500}
+.fld label i{font-style:normal;color:var(--garnet)}
+.fld input,.fld select,.fld textarea{
+  padding:8px 10px;border-radius:var(--radius);border:1px solid var(--stone-3);
+  background:var(--stone-0);font-size:13.5px;width:100%;
+}
+.fld textarea{resize:vertical;min-height:76px;font-family:inherit;line-height:1.45}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.check{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;color:var(--ink-soft);cursor:pointer}
+.check input{margin:2px 0 0;accent-color:var(--garnet);flex:none}
+.totals{padding:12px 16px;border-top:1px solid var(--stone-2);display:grid;gap:6px;font-size:13px}
+.trow{display:flex;justify-content:space-between;gap:12px;color:var(--ink-soft)}
+.trow span:last-child{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+.trow.grand{
+  padding-top:9px;margin-top:3px;border-top:1px solid var(--stone-3);
+  color:var(--ink);font-size:16px;font-weight:600;
+}
+.trow.grand span:last-child{font-size:17px}
+.trow.disc{color:var(--garnet)}
+.place{
+  margin:0 16px 16px;padding:12px;border-radius:var(--radius);border:1px solid var(--ink);
+  background:var(--ink);color:var(--stone-0);font-size:14.5px;font-weight:600;width:calc(100% - 32px);
+}
+.place:hover{opacity:.88}
+.place:disabled{opacity:.4;cursor:not-allowed}
+.err{margin:0 16px 14px;padding:9px 11px;border-radius:var(--radius);background:var(--bad-wash);color:var(--bad);font-size:12.5px;border:1px solid var(--bad)}
+
+/* ---------- confirmation ---------- */
+.done{padding-block:44px 70px;max-width:660px}
+.done .tick{
+  width:40px;height:40px;border-radius:50%;background:var(--ok-wash);color:var(--ok);
+  display:grid;place-items:center;font-size:21px;margin-bottom:18px;border:1px solid var(--ok);
+}
+.done h1{font-size:clamp(25px,4.6vw,34px);margin-bottom:9px}
+.done .oid{font-family:var(--font-mono);font-size:13px;color:var(--ink-soft);margin-bottom:22px}
+.done .oid b{color:var(--ink);background:var(--stone-2);padding:2px 7px;border-radius:3px}
+.reply{border:1px solid var(--stone-2);border-radius:var(--radius);overflow:hidden;margin-bottom:22px;background:var(--stone-1)}
+.reply-hd{
+  padding:8px 13px;border-bottom:1px solid var(--stone-2);background:var(--stone-2);
+  font-family:var(--font-mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);
+}
+.reply pre{margin:0;padding:13px;font-family:var(--font-mono);font-size:12px;line-height:1.6;overflow-x:auto;white-space:pre-wrap;overflow-wrap:anywhere}
+.reply .none{padding:13px;font-size:13px;color:var(--ink-faint);margin:0}
+.again{
+  padding:10px 18px;border-radius:var(--radius);border:1px solid var(--stone-3);
+  background:var(--stone-1);color:var(--ink);font-size:14px;font-weight:600;
+}
+.again:hover{border-color:var(--ink-faint)}
+
+.foot{border-top:1px solid var(--stone-2);background:var(--stone-1)}
+.foot-in{padding-block:18px 26px;font-size:12px;color:var(--ink-faint);display:flex;flex-wrap:wrap;gap:6px 20px}
+
+@media (max-width:900px){
+  .shop{grid-template-columns:minmax(0,1fr)}
+  .rail{position:static}
+  .console-in{grid-template-columns:minmax(0,1fr)}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="bar"><div class="wrap bar-in">
+  <div class="brand"><b>Dosan Roasters</b><span>Seoul &middot; Est. 2019</span></div>
+  <div class="chip" id="chip" data-s="off"><i class="dot"></i><span id="chipText">No endpoint</span></div>
+  <button class="btn-workshop" id="toggleWorkshop" aria-expanded="false" aria-controls="console">Workshop</button>
+</div></div>
+
+<section class="console" id="console" hidden>
+  <div class="wrap console-in">
+    <div>
+      <h2>Connection</h2>
+      <div class="fld" style="margin-bottom:14px">
+        <label for="hookUrl">n8n Webhook URL</label>
+        <input type="url" id="hookUrl" placeholder="https://your-name.app.n8n.cloud/webhook-test/orders" autocomplete="off" spellcheck="false">
+      </div>
+      <p class="hint">In n8n, set the Webhook node's <b>HTTP Method</b> to match the mode below, then copy its <b>Production URL</b> after activating the workflow.</p>
+      <label style="margin-top:14px">How the order is sent</label>
+      <div class="radios">
+        <label><input type="radio" name="mode" value="get" id="m1" checked><span>GET &mdash; query string<b class="rec">start here</b><small>Set HTTP Method to GET. No CORS setup needed; every field arrives as a separate query parameter.</small></span></label>
+        <label><input type="radio" name="mode" value="post" id="m2"><span>POST &mdash; JSON body<small>Nested payload with a real items array. Needs HTTP Method POST and Allowed Origins set to <code>*</code>.</small></span></label>
+        <label><input type="radio" name="mode" value="preview" id="m3"><span>Preview only<small>Builds the request and sends nothing.</small></span></label>
+      </div>
+      <details>
+        <summary>Downstream ideas</summary>
+        <ol>
+          <li><b>Log it.</b> <span>Append one row per item to a Google Sheet.</span></li>
+          <li><b>Thank them.</b> <span>Draft and send a confirmation email in the shop's voice.</span></li>
+          <li><b>Read the notes.</b> <span>Have an agent classify the free-text note and decide whether a human needs to see it.</span></li>
+          <li><b>Route by value.</b> <span>Orders over &#8361;80,000 or from Gold members go to a separate branch.</span></li>
+          <li><b>Reply in the shop.</b> <span>Use a Respond to Webhook node &mdash; whatever you return appears on the confirmation screen.</span></li>
+          <li><b>Watch the stock.</b> <span>Flag any order containing the Nyeri AA, which has three bags left.</span></li>
+        </ol>
+      </details>
+    </div>
+    <div>
+      <h2>Payload</h2>
+      <div class="cpanel" style="margin-bottom:16px">
+        <div class="cpanel-hd"><b id="pvVerb">GET</b> <span id="pvTarget">order.placed</span>
+          <button class="cbtn" id="copyJson">Copy</button></div>
+        <pre class="json" id="payloadView"></pre>
+      </div>
+      <h2>Request log</h2>
+      <div class="cpanel"><div class="log" id="log"><p class="log-empty">Nothing sent yet.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<main id="shopView">
+  <section class="hero"><div class="wrap hero-in">
+    <p class="eyebrow">This week's offering</p>
+    <h1>Six coffees, roasted Tuesday. <i>Shipped Wednesday.</i></h1>
+    <p>We cup every lot before it goes on the shelf and pull it the moment it stops tasting like itself. Small batches, named origins, nothing older than fourteen days.</p>
+    <div class="roastline">
+      <span>Roast date &middot; 17 Nov 2026</span><span>Rest 7&ndash;10 days for espresso</span><span>Free delivery over &#8361;50,000</span>
+    </div>
+  </div></section>
+
+  <div class="wrap shop">
+    <div>
+      <div class="sect-hd"><h2>The shelf</h2><em id="shelfCount"></em></div>
+      <div class="grid" id="grid"></div>
+    </div>
+
+    <aside class="rail">
+      <div class="rail-hd"><h2>Your order</h2><em id="cartCount">empty</em></div>
+      <div class="lines" id="lines"></div>
+      <div class="form">
+        <h3>Delivery</h3>
+        <div class="fld"><label for="cName">Name <i>*</i></label><input id="cName" value="Lee Jiwon" autocomplete="name"></div>
+        <div class="fld"><label for="cEmail">Email <i>*</i></label><input id="cEmail" type="email" value="jiwon.lee@example.com" autocomplete="email"></div>
+        <div class="two">
+          <div class="fld"><label for="cPhone">Phone</label><input id="cPhone" value="010-2847-1193"></div>
+          <div class="fld"><label for="cTier">Membership</label>
+            <select id="cTier"><option value="none">None</option><option value="silver">Silver &minus;5%</option><option value="gold" selected>Gold &minus;10%</option></select></div>
+        </div>
+        <div class="fld"><label for="cMethod">Method</label>
+          <select id="cMethod"><option value="standard" selected>Standard &middot; &#8361;3,500</option><option value="express">Express &middot; &#8361;7,000</option><option value="pickup">Pickup at Dosan &middot; free</option></select></div>
+        <div class="fld" id="addrField"><label for="cAddr">Address</label><input id="cAddr" value="12 Dosan-daero 45-gil, Gangnam-gu, Seoul"></div>
+        <div class="fld"><label for="cNotes">Order notes</label>
+          <textarea id="cNotes" placeholder="Anything we should know?">Second time ordering the Guji and the last bag arrived split open. Please pack this one carefully &mdash; it's a gift.</textarea></div>
+        <label class="check"><input type="checkbox" id="cOptIn" checked><span>Email me when new lots land</span></label>
+      </div>
+      <div class="totals" id="totals"></div>
+      <div id="errSlot"></div>
+      <button class="place" id="place" disabled>Place order</button>
+    </aside>
+  </div>
+</main>
+
+<section class="wrap done" id="doneView" hidden>
+  <div class="tick" aria-hidden="true">&check;</div>
+  <h1>Order placed. Thank you.</h1>
+  <p class="oid">Reference <b id="doneId"></b> &middot; <span id="doneSummary"></span></p>
+  <div class="reply">
+    <div class="reply-hd">Reply from your workflow</div>
+    <div id="replyBody"></div>
+  </div>
+  <button class="again" id="again">Place another order</button>
+</section>
+
+<footer class="foot"><div class="wrap foot-in">
+  <span>Dosan Roasters is a fictional shop built for classroom use.</span>
+  <span>No payment is taken and no data leaves this page except to the endpoint you set.</span>
+</div></footer>
+
+<script>
+"use strict";
+
+/* ---------- catalogue ---------- */
+var PRODUCTS = [
+  { sku:"ETH-GUJ", name:"Guji Highlands", price:24000, stock:42, grind:true,
+    origin:"Ethiopia, Guji Zone", process:"Natural", alt:"1,950–2,200 masl",
+    varietal:"Heirloom", roast:"Light", notes:"White peach, jasmine, raspberry leaf" },
+  { sku:"COL-HUI", name:"Huila Pink Bourbon", price:26000, stock:28, grind:true,
+    origin:"Colombia, Huila", process:"Washed", alt:"1,750 masl",
+    varietal:"Pink Bourbon", roast:"Light–medium", notes:"Mandarin, lychee, cane sugar" },
+  { sku:"KEN-NYE", name:"Nyeri AA", price:28000, stock:3, grind:true,
+    origin:"Kenya, Nyeri", process:"Washed", alt:"1,800 masl",
+    varietal:"SL28 / SL34", roast:"Medium", notes:"Blackcurrant, tomato leaf, brown sugar" },
+  { sku:"BLD-001", name:"Dosan No.1", price:19000, stock:120, grind:true,
+    origin:"Brazil 60 / Guatemala 40", process:"Natural + washed", alt:"Blend",
+    varietal:"Mundo Novo, Caturra", roast:"Medium–dark", notes:"Cocoa, hazelnut, baked apple" },
+  { sku:"DEC-BRA", name:"Quiet Hours Decaf", price:21000, stock:55, grind:true,
+    origin:"Brazil, Cerrado", process:"Swiss Water", alt:"1,100 masl",
+    varietal:"Catuaí", roast:"Medium", notes:"Milk chocolate, almond, malt" },
+  { sku:"CBR-1L", name:"Cold Brew Concentrate", price:18000, stock:16, grind:false,
+    origin:"Dosan No.1 base", process:"18-hour cold steep", alt:"1L bottle",
+    varietal:"—", roast:"Medium–dark", notes:"Dark chocolate, fig, no acidity" }
+];
+var GRINDS = ["Whole bean","Filter","Espresso","Moka pot","French press"];
+var SIZES = [{ label:"250g", g:250, mult:1 },{ label:"1kg", g:1000, mult:3.6 }];
+var SHIPPING = { standard:3500, express:7000, pickup:0 };
+var TIERS = { none:0, silver:.05, gold:.10 };
+var FREE_OVER = 50000;
+
+/* ---------- state ---------- */
+var cart = [];
+var logs = [];
+var settings = { url:"", mode:"get" };
+
+function store(k, v) {
+  try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); }
+  catch (e) { return null; }
+}
+(function restore() {
+  var u = store("dosan.url"), m = store("dosan.mode");
+  if (u) settings.url = u;
+  if (m === "get" || m === "post" || m === "preview") settings.mode = m;
+})();
+
+var won = function (n) { return "₩" + Math.round(n).toLocaleString("en-US"); };
+var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) {
+  return { "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[c]; }); };
+
+function orderId() {
+  var d = new Date(), mo = "ABCDEFGHIJKL"[d.getMonth()];
+  var tail = "";
+  for (var i = 0; i < 4; i++) tail += "0123456789ABCDEF"[Math.floor(Math.random() * 16)];
+  return "DSN-" + String(d.getFullYear()).slice(2) + mo + String(d.getDate()).padStart(2, "0") + "-" + tail;
+}
+
+/* ---------- totals ---------- */
+function compute() {
+  var subtotal = cart.reduce(function (s, l) { return s + l.lineTotal; }, 0);
+  var count = cart.reduce(function (s, l) { return s + l.quantity; }, 0);
+  var method = document.getElementById("cMethod").value;
+  var tier = document.getElementById("cTier").value;
+  var ship = method === "pickup" || subtotal >= FREE_OVER ? 0 : SHIPPING[method];
+  var discount = Math.round(subtotal * TIERS[tier]);
+  return { subtotal:subtotal, count:count, method:method, tier:tier,
+           shipping:ship, discount:discount, total:Math.max(0, subtotal - discount + ship) };
+}
+
+/* ---------- payload ---------- */
+function buildPayload(id) {
+  var t = compute();
+  var method = t.method;
+  return {
+    event: "order.placed",
+    order_id: id || "DSN-… (assigned on submit)",
+    placed_at: new Date().toISOString(),
+    store: { name:"Dosan Roasters", channel:"web", currency:"KRW" },
+    customer: {
+      name: document.getElementById("cName").value.trim(),
+      email: document.getElementById("cEmail").value.trim(),
+      phone: document.getElementById("cPhone").value.trim(),
+      membership: t.tier,
+      marketing_opt_in: document.getElementById("cOptIn").checked
+    },
+    delivery: {
+      method: method,
+      address: method === "pickup" ? null : document.getElementById("cAddr").value.trim(),
+      pickup_store: method === "pickup" ? "Dosan flagship" : null
+    },
+    items: cart.map(function (l) {
+      return { sku:l.sku, name:l.name, origin:l.origin, process:l.process, roast:l.roast,
+               grind:l.grind, size:l.sizeLabel, size_g:l.sizeG,
+               unit_price:l.unitPrice, quantity:l.quantity, line_total:l.lineTotal };
+    }),
+    totals: { item_count:t.count, subtotal:t.subtotal, discount:t.discount,
+              shipping:t.shipping, total:t.total },
+    notes: document.getElementById("cNotes").value.trim(),
+    payment: { method:"card", status:"paid" }
+  };
+}
+
+var PLACEHOLDER = "https://your-instance.app.n8n.cloud/webhook/orders";
+
+/* Flat query parameters. Every field lands in $json.query.<name> in n8n,
+   so students can drag them straight out without parsing anything. */
+function buildParams(id) {
+  var p = buildPayload(id);
+  var q = {
+    event: p.event,
+    order_id: p.order_id,
+    placed_at: p.placed_at,
+    customer_name: p.customer.name,
+    customer_email: p.customer.email,
+    customer_phone: p.customer.phone,
+    membership: p.customer.membership,
+    marketing_opt_in: String(p.customer.marketing_opt_in),
+    delivery_method: p.delivery.method,
+    delivery_address: p.delivery.address || "",
+    item_count: String(p.totals.item_count),
+    subtotal: String(p.totals.subtotal),
+    discount: String(p.totals.discount),
+    shipping: String(p.totals.shipping),
+    total: String(p.totals.total),
+    items_summary: p.items.map(function (l) {
+      return l.quantity + "× " + l.name + " (" + l.size + (l.grind ? ", " + l.grind : "") + ")";
+    }).join("; "),
+    notes: p.notes
+  };
+  var withJson = {}, k;
+  for (k in q) withJson[k] = q[k];
+  withJson.items_json = JSON.stringify(p.items);
+  return new URLSearchParams(withJson).toString().length < 5500 ? withJson : q;
+}
+
+function getUrl(id) {
+  var base = settings.url || PLACEHOLDER;
+  var qs = new URLSearchParams(buildParams(id)).toString();
+  return base + (base.indexOf("?") >= 0 ? "&" : "?") + qs;
+}
+
+function colorJson(obj) {
+  var raw = JSON.stringify(obj, null, 2);
+  return esc(raw)
+    .replace(/&quot;([^&]*?)&quot;(\s*:)/g, '<span class="k">&quot;$1&quot;</span>$2')
+    .replace(/(:\s*)&quot;([^]*?)&quot;/g, '$1<span class="s">&quot;$2&quot;</span>')
+    .replace(/(:\s*)(-?\d+\.?\d*)/g, '$1<span class="n">$2</span>')
+    .replace(/(:\s*)(true|false|null)/g, '$1<span class="b">$2</span>');
+}
+
+/* ---------- rendering ---------- */
+function renderGrid() {
+  var g = document.getElementById("grid");
+  g.innerHTML = PRODUCTS.map(function (p, i) {
+    var low = p.stock <= 5;
+    var grindSel = p.grind
+      ? '<select aria-label="Grind for ' + esc(p.name) + '" data-g="' + i + '">' +
+        GRINDS.map(function (x) { return '<option>' + x + '</option>'; }).join("") + '</select>'
+      : "";
+    var sizeSel = p.grind
+      ? '<select aria-label="Size for ' + esc(p.name) + '" data-z="' + i + '">' +
+        SIZES.map(function (s, j) { return '<option value="' + j + '">' + s.label + '</option>'; }).join("") + '</select>'
+      : "";
+    return '<article class="card">' +
+      '<div class="card-top"><h3>' + esc(p.name) + '</h3><span class="price num">' + won(p.price) + '</span></div>' +
+      '<p class="spec">' + esc(p.origin) + ' &middot; ' + esc(p.process) + '<br>' +
+        esc(p.varietal) + ' &middot; ' + esc(p.alt) + '</p>' +
+      '<p class="notes">' + esc(p.notes) + '</p>' +
+      '<div class="flags"><span class="flag">' + esc(p.roast) + '</span>' +
+        '<span class="flag' + (low ? " low" : "") + '">' +
+        (low ? p.stock + " left" : "In stock") + '</span>' +
+        '<span class="flag">' + esc(p.sku) + '</span></div>' +
+      '<div class="card-ctl">' + grindSel + sizeSel +
+        '<button class="add" data-add="' + i + '"' + (p.stock === 0 ? " disabled" : "") + '>Add</button></div>' +
+    '</article>';
+  }).join("");
+  document.getElementById("shelfCount").textContent = PRODUCTS.length + " lots · roasted 17 Nov";
+}
+
+function renderCart() {
+  var box = document.getElementById("lines");
+  if (!cart.length) {
+    box.innerHTML = '<p class="empty">Nothing here yet. Add a bag from the shelf.</p>';
+  } else {
+    box.innerHTML = cart.map(function (l, i) {
+      return '<div class="line">' +
+        '<b>' + esc(l.name) + '</b>' +
+        '<span class="amt num">' + won(l.lineTotal) + '</span>' +
+        '<span class="meta">' + esc(l.sizeLabel) + (l.grind ? " · " + esc(l.grind) : "") +
+          " · " + won(l.unitPrice) + '</span>' +
+        '<div class="qty"><button data-dec="' + i + '" aria-label="One fewer">&minus;</button>' +
+          '<span class="num">' + l.quantity + '</span>' +
+          '<button data-inc="' + i + '" aria-label="One more">+</button></div>' +
+      '</div>';
+    }).join("");
+  }
+  var t = compute();
+  document.getElementById("cartCount").textContent = t.count ? t.count + (t.count === 1 ? " item" : " items") : "empty";
+
+  var rows = [["Subtotal", won(t.subtotal), ""]];
+  if (t.discount) rows.push([document.getElementById("cTier").value === "gold" ? "Gold member −10%" : "Silver member −5%", "−" + won(t.discount), "disc"]);
+  rows.push([t.method === "pickup" ? "Pickup" : t.shipping === 0 ? "Delivery (free over " + won(FREE_OVER) + ")" : "Delivery", t.shipping ? won(t.shipping) : "Free", ""]);
+  rows.push(["Total", won(t.total), "grand"]);
+  document.getElementById("totals").innerHTML = rows.map(function (r) {
+    return '<div class="trow ' + r[2] + '"><span>' + r[0] + '</span><span>' + r[1] + '</span></div>';
+  }).join("");
+
+  document.getElementById("place").disabled = !cart.length;
+  document.getElementById("addrField").hidden = t.method === "pickup";
+  renderPayload();
+}
+
+function renderPayload() {
+  var view = document.getElementById("payloadView");
+  document.getElementById("pvVerb").textContent = settings.mode === "post" ? "POST" : "GET";
+
+  if (settings.mode === "post") {
+    view.innerHTML = colorJson(buildPayload(null));
+  } else {
+    var params = buildParams(null), first = true;
+    var out = esc(settings.url || PLACEHOLDER);
+    Object.keys(params).forEach(function (k) {
+      out += "\n  " + (first ? "?" : "&amp;") +
+        '<span class="k">' + esc(k) + '</span>=' +
+        '<span class="s">' + esc(encodeURIComponent(params[k])) + '</span>';
+      first = false;
+    });
+    view.innerHTML = out;
+  }
+
+  document.getElementById("pvTarget").textContent =
+    settings.mode === "preview" ? "preview only — nothing is sent"
+      : settings.url ? settings.url.replace(/^https?:\/\//, "") : "no endpoint set";
+}
+
+function renderChip() {
+  var chip = document.getElementById("chip"), txt = document.getElementById("chipText");
+  if (settings.mode === "preview") { chip.dataset.s = "preview"; txt.textContent = "Preview mode"; }
+  else if (settings.url) {
+    chip.dataset.s = "live";
+    var host = "";
+    try { host = new URL(settings.url).hostname; } catch (e) { host = "endpoint set"; }
+    txt.textContent = host;
+  } else { chip.dataset.s = "off"; txt.textContent = "No endpoint"; }
+}
+
+function renderLog() {
+  var box = document.getElementById("log");
+  if (!logs.length) { box.innerHTML = '<p class="log-empty">Nothing sent yet.</p>'; return; }
+  box.innerHTML = logs.map(function (e) {
+    return '<div class="log-row"><time>' + e.t + '</time>' +
+      '<span class="st ' + e.cls + '">' + esc(e.status) + '</span>' +
+      '<p>' + esc(e.msg) + '</p></div>';
+  }).join("");
+}
+
+function addLog(status, cls, msg) {
+  logs.unshift({ t:new Date().toTimeString().slice(0, 8), status:status, cls:cls, msg:msg });
+  if (logs.length > 25) logs.pop();
+  renderLog();
+}
+
+function showError(msg) {
+  document.getElementById("errSlot").innerHTML = msg ? '<p class="err">' + esc(msg) + '</p>' : "";
+}
+
+/* ---------- cart actions ---------- */
+function addToCart(i) {
+  var p = PRODUCTS[i];
+  var grind = p.grind ? document.querySelector('[data-g="' + i + '"]').value : null;
+  var zi = p.grind ? +document.querySelector('[data-z="' + i + '"]').value : 0;
+  var size = SIZES[zi];
+  var unitPrice = p.grind ? Math.round(p.price * size.mult / 500) * 500 : p.price;
+  var key = p.sku + "|" + (grind || "-") + "|" + (p.grind ? size.label : "1L");
+  var found = null;
+  for (var k = 0; k < cart.length; k++) if (cart[k].key === key) found = cart[k];
+  if (found) { found.quantity += 1; found.lineTotal = found.unitPrice * found.quantity; }
+  else {
+    cart.push({ key:key, sku:p.sku, name:p.name, origin:p.origin, process:p.process, roast:p.roast,
+      grind:grind, sizeLabel:p.grind ? size.label : "1L bottle", sizeG:p.grind ? size.g : 1000,
+      unitPrice:unitPrice, quantity:1, lineTotal:unitPrice });
+  }
+  showError("");
+  renderCart();
+}
+
+/* ---------- send ---------- */
+/* Last-resort dispatch: an image request is exempt from CORS, so it fires even
+   when fetch refuses. The reply can never be read, so the UI says so plainly. */
+function beacon(url, id) {
+  return new Promise(function (resolve) {
+    var img = new Image(), settled = false;
+    var finish = function () {
+      if (settled) return;
+      settled = true;
+      addLog("SENT", "dim", id + " dispatched, but the shop could not confirm n8n accepted it. Check Executions.");
+      resolve({ ok:true, text:null, blind:true });
+    };
+    img.onload = finish;
+    img.onerror = finish;
+    setTimeout(finish, 6000);
+    img.src = url;
+  });
+}
+
+function readable(res, id) {
+  return res.text().then(function (text) {
+    addLog(String(res.status), res.ok ? "ok" : "bad",
+      id + " → " + (text ? text.slice(0, 140) : "(empty body)"));
+    if (!res.ok) {
+      var err = new Error("n8n answered " + res.status + ". " +
+        (text ? text.slice(0, 160) : "No detail returned."));
+      err.hard = true;
+      throw err;
+    }
+    return { ok:true, text:text };
+  });
+}
+
+function postOrder(payload, id) {
+  if (settings.mode === "preview") {
+    addLog("PREVIEW", "dim", "Request built for " + id + ". Nothing sent.");
+    return Promise.resolve({ ok:true, text:null, skipped:true });
+  }
+  if (!settings.url) {
+    return Promise.reject(new Error("Paste your n8n Webhook URL into the Workshop panel first."));
+  }
+
+  if (settings.mode === "post") {
+    return fetch(settings.url, {
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body:JSON.stringify(payload)
+    }).then(function (res) { return readable(res, id); })
+      .catch(function (e) {
+        if (e.hard) throw e;
+        addLog("BLOCKED", "bad", "POST blocked before a reply arrived — add Allowed Origins * to the Webhook node, or switch to GET.");
+        throw new Error("The browser blocked the POST. Set Allowed Origins (CORS) to * on the Webhook node, or switch to GET — query string.");
+      });
+  }
+
+  var url = getUrl(id);
+  return fetch(url, { method:"GET" })
+    .then(function (res) { return readable(res, id); })
+    .catch(function (e) {
+      if (e.hard) throw e;
+      return fetch(url, { method:"GET", mode:"no-cors" })
+        .then(function () {
+          addLog("SENT", "dim", id + " dispatched. Reply unreadable — add Allowed Origins * to show it here.");
+          return { ok:true, text:null, blind:true };
+        })
+        .catch(function () { return beacon(url, id); });
+    });
+}
+
+function showDone(payload, result) {
+  var t = payload.totals;
+  document.getElementById("doneId").textContent = payload.order_id;
+  document.getElementById("doneSummary").textContent =
+    t.item_count + (t.item_count === 1 ? " item" : " items") + " · " + won(t.total);
+
+  var body = document.getElementById("replyBody");
+  if (result.skipped) {
+    body.innerHTML = '<p class="none">Preview mode — no request was sent.</p>';
+  } else if (result.blind) {
+    body.innerHTML = '<p class="none">The order was dispatched, but the browser would not let the shop read the reply. ' +
+      'Open your n8n Executions tab to confirm it arrived. To show the reply here, open the Webhook node and set ' +
+      '<b>Allowed Origins (CORS)</b> to <b>*</b>.</p>';
+  } else if (result.text && result.text.trim()) {
+    var pretty = result.text;
+    try { pretty = JSON.stringify(JSON.parse(result.text), null, 2); } catch (e) {}
+    body.innerHTML = "<pre>" + esc(pretty) + "</pre>";
+  } else {
+    body.innerHTML = '<p class="none">Your workflow accepted the order but returned an empty body. Add a Respond to Webhook node to send a message back here.</p>';
+  }
+  document.getElementById("shopView").hidden = true;
+  document.getElementById("doneView").hidden = false;
+  window.scrollTo({ top:0, behavior:"smooth" });
+}
+
+/* ---------- wiring ---------- */
+document.getElementById("grid").addEventListener("click", function (e) {
+  var b = e.target.closest("[data-add]");
+  if (b) addToCart(+b.dataset.add);
+});
+document.getElementById("lines").addEventListener("click", function (e) {
+  var inc = e.target.closest("[data-inc]"), dec = e.target.closest("[data-dec]");
+  if (inc) { var a = cart[+inc.dataset.inc]; a.quantity++; a.lineTotal = a.unitPrice * a.quantity; renderCart(); }
+  if (dec) { var i = +dec.dataset.dec, l = cart[i];
+    if (l.quantity > 1) { l.quantity--; l.lineTotal = l.unitPrice * l.quantity; } else { cart.splice(i, 1); }
+    renderCart(); }
+});
+["cMethod","cTier","cOptIn","cName","cEmail","cPhone","cAddr","cNotes"].forEach(function (id) {
+  var el = document.getElementById(id);
+  el.addEventListener("input", renderCart);
+  el.addEventListener("change", renderCart);
+});
+
+document.getElementById("toggleWorkshop").addEventListener("click", function () {
+  var panel = document.getElementById("console");
+  panel.hidden = !panel.hidden;
+  this.setAttribute("aria-expanded", String(!panel.hidden));
+});
+
+var urlInput = document.getElementById("hookUrl");
+urlInput.value = settings.url;
+urlInput.addEventListener("input", function () {
+  settings.url = this.value.trim();
+  store("dosan.url", settings.url);
+  renderChip(); renderPayload(); showError("");
+});
+document.querySelector('input[name=mode][value="' + settings.mode + '"]').checked = true;
+Array.prototype.forEach.call(document.querySelectorAll("input[name=mode]"), function (r) {
+  r.addEventListener("change", function () {
+    settings.mode = this.value; store("dosan.mode", this.value);
+    renderChip(); renderPayload(); showError("");
+  });
+});
+
+document.getElementById("copyJson").addEventListener("click", function () {
+  var sampleId = orderId();
+  var btn = this, text = settings.mode === "post"
+    ? JSON.stringify(buildPayload(sampleId), null, 2)
+    : getUrl(sampleId);
+  var done = function (word) { btn.textContent = word; setTimeout(function () { btn.textContent = "Copy"; }, 1600); };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(function () { done("Copied"); }).catch(function () { select(); });
+  } else { select(); }
+  function select() {
+    var r = document.createRange();
+    r.selectNodeContents(document.getElementById("payloadView"));
+    var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+    done("Selected");
+  }
+});
+
+document.getElementById("place").addEventListener("click", function () {
+  var btn = this;
+  var name = document.getElementById("cName").value.trim();
+  var email = document.getElementById("cEmail").value.trim();
+  if (!name || !email) { showError("Name and email are both needed before the order can go through."); return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showError("That email address doesn't look right."); return; }
+  showError("");
+  var id = orderId();
+  var payload = buildPayload(id);
+  btn.disabled = true; btn.textContent = "Sending…";
+  postOrder(payload, id).then(function (result) {
+    showDone(payload, result);
+    cart = [];
+    btn.textContent = "Place order";
+    renderCart();
+  }).catch(function (err) {
+    showError(err.message);
+    btn.disabled = false; btn.textContent = "Place order";
+  });
+});
+
+document.getElementById("again").addEventListener("click", function () {
+  document.getElementById("doneView").hidden = true;
+  document.getElementById("shopView").hidden = false;
+  window.scrollTo({ top:0, behavior:"smooth" });
+});
+
+renderGrid(); renderChip(); renderCart(); renderLog();
+</script>
+
+</body>
+</html>
